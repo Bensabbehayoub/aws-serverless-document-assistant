@@ -1,0 +1,289 @@
+{
+  "start": "-PT24H",
+  "periodOverride": "inherit",
+  "widgets": [
+    {
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 2,
+      "properties": {
+        "markdown": "## Document Assistant\nAPI: `${api_id}` (stage `${stage}`). Lambdas: `${api_function}` (API) and `${processor_function}` (text extraction). Region: ${region}."
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 2,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "API requests and errors",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Sum",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/ApiGateway",
+            "Count",
+            "ApiId",
+            "${api_id}",
+            "Stage",
+            "default",
+            {
+              "label": "Requests"
+            }
+          ],
+          [
+            "AWS/ApiGateway",
+            "4xx",
+            "ApiId",
+            "${api_id}",
+            "Stage",
+            "default",
+            {
+              "label": "4xx (client errors)"
+            }
+          ],
+          [
+            "AWS/ApiGateway",
+            "5xx",
+            "ApiId",
+            "${api_id}",
+            "Stage",
+            "default",
+            {
+              "label": "5xx (server errors)"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 2,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "API latency (ms)",
+        "region": "${region}",
+        "view": "timeSeries",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/ApiGateway",
+            "Latency",
+            "ApiId",
+            "${api_id}",
+            "Stage",
+            "default",
+            {
+              "stat": "p50",
+              "label": "p50"
+            }
+          ],
+          [
+            "AWS/ApiGateway",
+            "Latency",
+            "ApiId",
+            "${api_id}",
+            "Stage",
+            "default",
+            {
+              "stat": "p95",
+              "label": "p95"
+            }
+          ],
+          [
+            "AWS/ApiGateway",
+            "IntegrationLatency",
+            "ApiId",
+            "${api_id}",
+            "Stage",
+            "default",
+            {
+              "stat": "p95",
+              "label": "Lambda p95"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 2,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Errors in the last 24 hours",
+        "region": "${region}",
+        "view": "singleValue",
+        "stat": "Sum",
+        "period": 86400,
+        "metrics": [
+          [
+            "AWS/ApiGateway",
+            "5xx",
+            "ApiId",
+            "${api_id}",
+            "Stage",
+            "default",
+            {
+              "label": "API 5xx"
+            }
+          ],
+          [
+            "AWS/Lambda",
+            "Errors",
+            "FunctionName",
+            "${api_function}",
+            {
+              "label": "API Lambda crashes"
+            }
+          ],
+          [
+            "AWS/Lambda",
+            "Errors",
+            "FunctionName",
+            "${processor_function}",
+            {
+              "label": "Processor crashes"
+            }
+          ],
+          [
+            "${metric_namespace}",
+            "ProcessorErrors",
+            {
+              "label": "Extraction errors"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 8,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Lambda invocations, errors and throttles",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Sum",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/Lambda",
+            "Invocations",
+            "FunctionName",
+            "${api_function}",
+            {
+              "label": "API invocations"
+            }
+          ],
+          [
+            "AWS/Lambda",
+            "Invocations",
+            "FunctionName",
+            "${processor_function}",
+            {
+              "label": "Processor invocations"
+            }
+          ],
+          [
+            "AWS/Lambda",
+            "Errors",
+            "FunctionName",
+            "${api_function}",
+            {
+              "label": "API errors"
+            }
+          ],
+          [
+            "AWS/Lambda",
+            "Errors",
+            "FunctionName",
+            "${processor_function}",
+            {
+              "label": "Processor errors"
+            }
+          ],
+          [
+            "AWS/Lambda",
+            "Throttles",
+            "FunctionName",
+            "${api_function}",
+            {
+              "label": "API throttles"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 8,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Lambda duration p95 (ms)",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "p95",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/Lambda",
+            "Duration",
+            "FunctionName",
+            "${api_function}",
+            {
+              "label": "API"
+            }
+          ],
+          [
+            "AWS/Lambda",
+            "Duration",
+            "FunctionName",
+            "${processor_function}",
+            {
+              "label": "PDF processor"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 14,
+      "width": 24,
+      "height": 7,
+      "properties": {
+        "title": "Latest warnings and errors from both Lambdas",
+        "region": "${region}",
+        "view": "table",
+        "query": "SOURCE '/aws/lambda/${api_function}' | SOURCE '/aws/lambda/${processor_function}' | fields @timestamp, @log, level, message, code, reason, detail, document_id\n| filter level = \"ERROR\" or level = \"WARN\"\n| sort @timestamp desc\n| limit 25"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 21,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "title": "Processed PDFs",
+        "region": "${region}",
+        "view": "table",
+        "query": "SOURCE '/aws/lambda/${processor_function}' | fields @timestamp, document_id, pages, chars\n| filter message = \"Document processed\"\n| sort @timestamp desc\n| limit 20"
+      }
+    }
+  ]
+}

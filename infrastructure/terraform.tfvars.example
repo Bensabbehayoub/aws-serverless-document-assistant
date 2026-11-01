@@ -1,0 +1,14 @@
+# Copy to terraform.tfvars and adjust. terraform.tfvars is ignored by git.
+
+project     = "docassist"
+environment = "dev"
+region      = "eu-north-1"
+
+# Where the frontend runs (CORS and Cognito login/logout URLs).
+frontend_origin = "http://localhost:3000"
+
+# Alarm emails. AWS sends a confirmation email first; click "Confirm subscription".
+alert_email = "you@example.com"
+
+# extractive = no AI, free. gemini needs an API key in Parameter Store. bedrock needs model access.
+ai_provider = "extractive"

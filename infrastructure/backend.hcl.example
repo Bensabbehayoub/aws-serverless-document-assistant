@@ -1,0 +1,8 @@
+# Copy to backend.hcl and replace ACCOUNT_ID. Used by: terraform init -backend-config=backend.hcl
+# The bucket is created once by hand (see docs/infrastructure.md), never by this project.
+
+bucket       = "docassist-tfstate-ACCOUNT_ID"
+key          = "docassist/dev/terraform.tfstate"
+region       = "eu-north-1"
+encrypt      = true
+use_lockfile = true
